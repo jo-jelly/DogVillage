@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.payment.PaymentDirectMapper"> <!-- 네임스페이스가 인터페이스 프로덕트맵퍼랑경로가같아야함 -->
+
+
+
+<select id="direct_detail" resultType="team.Product.ProductVO" parameterType="java.lang.Integer">
+		select  
+		p_code,
+		p_name,
+		p_price,
+		p_amount,
+		p_price * p_amount money				 
+		from 		
+		product	
+		where p_code = #{p_code}
+	
+</select>
+
+
+
+
+<select id="pay_diliver" resultType="team.customer.CustomerVO" >
+		select * from Customer where id = #{id, jdbcType=VARCHAR }
+	</select>
+
+</mapper>

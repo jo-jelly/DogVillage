@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.payment.BeforePaymentMapper"> <!-- 네임스페이스가 인터페이스 프로덕트맵퍼랑경로가같아야함 -->
+   
+<select id="pay_prod" resultType="team.payment.BeforePaymentVO">
+
+	select 
+		p.p_code, p.p_name, p.p_price,p.p_image,
+		c.id, c.name, c.tel, c.zipcode, c.address,
+		ct.c_code, ct.p_code, ct.p_amount, 
+		p.p_price * ct.p_amount money 
+	from 
+		product p, 
+		cart ct,
+		customer c
+	where 
+		c.id=ct.id 
+	and p.p_code=ct.p_code
+	
+</select>
+
+<select id="detail" resultType="team.Cart.CartVO" parameterType="java.lang.Integer">
+	select  
+		p.p_code,ct.c_code,
+		c.id,c.name, p.p_name,
+		p.p_price,
+		ct.p_amount,
+		p.p_price * ct.p_amount money		
+		 
+		from 
+		
+		product p, 
+		cart ct,
+		customer c
+		
+		where p.p_code = ct.p_code AND ct.id = c.id and ct.c_code = #{c_code}
+	
+</select>
+
+<select id="pay_diliver" resultType="team.customer.CustomerVO" >
+		select * from Customer where id = #{id}
+	</select>
+
+
+   
+
+<!-- <select id="list" resultType="team.payment.BeforePaymentVO" >
+
+		select  
+		p.p_code,ct.c_code,
+		c.id,c.name, p.p_name,
+		p.p_price,
+		ct.p_amount,
+		p.p_price * ct.p_amount money		
+		 
+		from 
+		
+		product p, 
+		cart ct,
+		customer c
+		
+		where p.p_code = ct.p_code AND ct.id = c.id
+</select>
+ -->
+</mapper>

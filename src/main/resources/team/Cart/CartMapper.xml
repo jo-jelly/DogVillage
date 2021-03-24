@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.Cart.CartMapper"> <!-- 네임스페이스가 인터페이스 프로덕트맵퍼랑경로가같아야함 -->
+   
+<select id="list" resultType="cartVO">
+
+	select 
+		p.p_code,ct.c_code,
+		c.id,c.name, p.p_name,
+		p.p_price,
+		ct.p_amount orders,
+		p.p_amount,p.p_image,
+		p.p_price * ct.p_amount money 
+	from 
+		product p, 
+		cart ct,
+		customer c
+	where 
+		ct.id = #{pid} AND c.id = #{pid}
+	and p.p_code=ct.p_code
+	order by 
+	ct.c_code desc
+
+</select><!-- p_code,c_code 다가져옴..여기서다가져와야함 멤버아이디넣엉햐ㅏㅁ-->
+
+   <select id="totalCnt" resultType="java.lang.Integer">
+      select count(*) from cart
+   </select>
+
+   <select id="mytotalCnt" resultType="java.lang.Integer">
+      select count(*) from cart WHERE id=#{id}
+   </select>
+
+
+<sql id="noMax">
+   (select max(c_code)+1 from cart)
+</sql> 
+   
+<insert id="insert" parameterType="cartVO">
+	<selectKey keyProperty="c_code" resultType="java.lang.Integer" order="BEFORE">
+		<include refid="noMax"/>
+	</selectKey>
+		insert into cart 
+		(c_code, id,p_code, p_amount) 
+		values
+		(#{c_code},#{id}, #{p_code}, #{p_amount})
+
+</insert> 
+   
+   <insert id="insertfirst" parameterType="cartVO">
+		insert into cart 
+		(c_code, id,p_code, p_amount) 
+		values
+		(1,#{id}, #{p_code}, #{p_amount})
+   </insert>
+    
+   <update id="modify" parameterType="CartVO" >
+		update cart set p_amount = #{p_amount} where c_code = #{c_code}
+
+   </update>
+    
+
+   <delete id="delete" parameterType="java.lang.String"> <!-- int많이쓰는데 체크박스떄문에 스트링함-->
+   		delete from Cart where c_code = #{c_code}
+   </delete>
+
+	<!-- 장바구니에 동일한 상품 레코드 확인-->
+	<select id="sameCart" resultType="java.lang.Integer">
+		select count(*) from cart WHERE id=#{id} and p_code=#{p_code}
+   </select>
+	
+	<!-- 장바구니에 동일 상품이 존재하면 수정-->
+	<update id="updateCart" >
+		update cart 
+		set
+		p_amount =p_amount + #{p_amount} 
+		where
+		id = #{id}
+		and
+		p_code=#{p_code}
+		
+   </update>
+   
+   <select id="pa" resultType="java.lang.Integer"> <!-- 그 상품코드의 들어있는값 -->
+		 select p_amount from cart where p_code=#{p_code} AND id=#{id}
+   </select>
+	
+   
+</mapper>

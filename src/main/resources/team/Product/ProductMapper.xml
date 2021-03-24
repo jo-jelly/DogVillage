@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.Product.ProductMapper"> <!-- 네임스페이스가 인터페이스 프로덕트맵퍼랑경로가같아야함 -->
+   <select id="list" resultType="productVO"> <!-- id가 메서드명  resultType. 가져다쓸수잇음. 알리아스 걸어야함 -->
+      select * from product
+   </select>
+
+   <select id="cateDList" resultType="productVO" parameterType="productVO">
+       <![CDATA[
+		select * from (select rownum rnum, t1.* from 
+		(select * from product where p_cate_d = #{vo.p_cate_d} order by p_code) t1) 
+		where rnum >= #{start} and rnum <= #{end}
+		]]>
+   </select>
+   
+   	<select id="totalCntCate_d" resultType="java.lang.Integer">
+		select count(*) from product where p_cate_d = #{p_cate_d}
+	</select>
+	
+   	<select id="totalCntSch" resultType="java.lang.Integer" parameterType="productVO">
+		select count(*) from product where p_name like '%'||#{p_name}||'%'
+	</select>
+	
+	<select id="listSch" resultType="productVO" parameterType="productVO">
+       <![CDATA[
+		select * from (select rownum rnum, t1.* from 
+		(select * from product where p_name like '%'||#{vo.p_name}||'%' order by p_code) t1) 
+		where rnum >= #{start} and rnum <= #{end}
+		]]>
+   </select>
+   
+<!--    <select id="listSch" resultType="boardVO" parameterType="boardVO"> 
+     select * from board where title like '%${title}%' 
+   </select>  -->
+   
+   <select id="detail" resultType="productVO" parameterType="java.lang.Integer"> <!-- 얘는 파라메타 필요! pk  -->
+      select * from product where p_code = #{p_code} <!--얘는 # 으로 써야함 -->
+   </select>
+     <select id="overlap" resultType="java.lang.Integer">
+      select
+      	COUNT(*) 
+      from 
+		cart      
+	  where
+      	id = #{id}
+      AND 
+      	p_code = #{p_code}
+      
+   </select>
+    
+   
+</mapper>

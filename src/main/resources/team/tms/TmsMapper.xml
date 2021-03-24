@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.tms.TmsMapper">
+	
+	<select id="newList" resultType="tmsVO">
+		select * from tms where t_status = '신규'
+	</select>
+	<select id="listSch" resultType="tmsVO" parameterType="tmsVO">
+		select * from tms where t_no = #{t_no}
+	</select>
+	
+	<select id="listStorage" resultType="ProductVO">
+		select * from product where p_name = #{p_name}
+	</select>
+	
+	<select id="list" resultType="tmsVO">
+		<![CDATA[
+			select * from (select rownum rnum, t1.* from 
+			(select * from tms order by t_no) t1) 
+			where rnum >= #{start} and rnum <= #{end}
+		]]>
+	</select>
+	
+	<select id="totalCnt" resultType="java.lang.Integer">
+		select count(*) from tms
+	</select>
+	
+	<select id="listmy" resultType="tmsVO">
+		select * from tms where t_pid = #{t_pid}
+	</select>
+	
+	<select id="deliList" resultType="tmsVO">
+		select * from tms where t_status = '배송중'
+	</select>
+	
+	<update id="invoice" parameterType="tmsVO">
+		update tms set t_status = #{t_status}, t_invoicen = #{t_invoicen}, t_date = sysdate where t_no = #{t_no}
+	</update>
+	
+	<update id="tmsDC" parameterType="tmsVO">
+		update tms set t_status = #{t_status} where t_no = #{t_no}
+	</update>
+	
+	<insert id="adjInsert" parameterType="AdjustmentVO">
+		insert into adjustment 
+		(adj_code, adj_name, adj_price, adj_cate, adj_cate_d, adj_amount,adj_totalprice, adj_pid, adj_sdate) 
+		values
+		(#{adj_code}, #{adj_name}, #{adj_price}, #{adj_cate}, #{adj_cate_d}, #{adj_amount}, #{adj_totalprice}, #{adj_pid}, sysdate)
+	</insert>
+	
+		<select id="detail" resultType="tmsVO" parameterType="java.lang.Integer">
+		select * from tms where t_no = #{t_no}
+	</select>
+	
+	<sql id="noMax">
+		(select max(t_no)+1 from Tms)
+	</sql>
+	
+	<update id="modify" parameterType="tmsVO">
+		update tms set 
+		t_status = #{t_status}
+		where t_no = #{t_no}
+	</update>
+</mapper>
+
+

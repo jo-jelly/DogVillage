@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.login.LoginMapper">
+	
+<!--<select id="login" resultType="JoinVO" parameterType="JoinVO" > -->
+<select id="login" resultType="JoinVO">
+			select * from Customer
+			where id = #{'id'}
+			<!-- where id=#{id , jdbcType=VARCHAR} -->
+</select>
+
+		
+		
+<select id="findPw" resultType="JoinVO">
+			select * from Customer
+			where id = #{id} and mail = #{mail}
+			<!-- where id=#{id , jdbcType=VARCHAR} -->
+</select>
+
+		
+</mapper>
+

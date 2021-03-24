@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.payment.PaymentMapper">
+
+
+	<select id="list" resultType="CartVO">
+		select * from cart
+	</select>
+	
+	<select id="detail" resultType="PaymentVO" parameterType="java.lang.Integer">
+		select * from payment where or_no = #{or_no}
+	</select>
+	
+	<select id="listStorage" resultType="ProductVO">
+		select * from product where p_name = #{p_name}
+	</select>
+	
+	<sql id="noMax">
+		(select max(or_no)+1 from Payment)
+	</sql>
+	
+	<insert id="insert" parameterType="PaymentVO">
+		<selectKey keyProperty="or_no" resultType="java.lang.Integer" order="BEFORE">
+			<include refid="noMax"/>
+		</selectKey>
+		insert into Payment 
+		(or_no, or_id, or_name, or_p_name, or_amount, or_p_price, or_date,
+		 zipcode, or_p_code, or_address, pay_with, consent ,
+		 delivery_cost, payment_cost, or_tel, or_p_option, delivery_msg,
+		 card1, card2, card3 , card4) 
+		values
+		(#{or_no}, #{or_id},#{or_name},#{or_p_name},#{or_amount}, #{or_p_price}, sysdate, 
+		#{zipcode}, #{or_p_code}, #{or_address}, #{pay_with}, #{consent},
+		 #{delivery_cost}, #{payment_cost}, #{or_tel}, #{or_p_option}, #{delivery_msg},
+		 #{card1},#{card2},#{card3},#{card4})
+	</insert>
+	
+	<!--payment로 저장 말고 TMS로 저장하기위한 똑같은데 컬럼이 다른 sql -->
+	
+		
+	<sql id="noTMax">
+		(select max(t_no)+1 from TMS)
+	</sql>
+	
+	<insert id="insertT" parameterType="TmsVO">
+		<selectKey keyProperty="t_no" resultType="java.lang.Integer" order="BEFORE">
+			<include refid="noTMax"/>
+		</selectKey>
+		insert into tms 
+		(t_pid, t_recipient, t_r_phone, t_r_adress, t_r_zipcode, t_pname,
+		t_payment, t_status, t_no, t_amount, t_totalprice, t_fee, t_msg ,t_bdate ) 
+		values
+		(#{t_pid}, #{t_recipient},#{t_r_phone},#{t_r_adress},#{t_r_zipcode}, #{t_pname},  
+		#{t_payment}, '신규', #{t_no}, #{t_amount}, #{t_totalprice},#{t_fee},#{t_msg} , sysdate)
+	</insert>
+
+	<delete id = "delete" parameterType="CartVO">
+		delete  from cart where c_code = #{c_code}
+	</delete>
+
+	<delete id = "deleteList" parameterType="CartVO">
+		delete  from cart where c_code = #{c_code}
+	</delete>
+	
+	
+
+	
+		<update id="slice" parameterType="java.lang.Integer">
+		UPDATE PRODUCT set P_AMOUNT = P_AMOUNT-#{cnt}
+		WHERE p_code = #{p_code}
+	</update>
+		
+</mapper>
+
+

@@ -1,0 +1,211 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+
+
+
+
+
+<script type="text/javascript">
+function fileDelete(num){
+	
+	
+	if(confirm("파일을 삭제하시겠습니까?\n삭제된 파일은 복원되지 않습니다.")){
+		frm.action="FileDeleteReg";
+		$("#fileNum").val(num);
+		frm.submit();
+	}
+}
+
+function fn_nameChk(){
+//	$("#nameChk").click(function(){
+		$.ajax({
+		       url: '/aajjj/storage/insertChk',
+		       type: 'POST',
+		       dataType: 'json', //서버로부터 내가 받는 데이터의 타입
+		       data: {"name" : $("#p_name").val()},
+		       success: function(data){
+		          console.log(data)
+		            if(data.rrr == 0){
+		            console.log("중복된 상품명 없음");
+		            alert("중복된 상품명이 없음.");
+		            $("#submitChk").prop('disabled', false);
+		            $("#p_name").prop('readonly', true);
+		            }else if(data.rrr == 1){
+		               console.log("상품명 있음");
+		               alert("중복된 상품명이 존재합니다.");
+		               $("#submitChk").prop('disabled', true);
+		           	 $("#p_name").prop('readonly', false);
+		            }else{
+		               alert("상품명이 비어있습니다.");
+		               $("#submitChk").prop('disabled', true);
+		           	 $("#p_name").prop('readonly', false);
+
+			         }
+		       },
+		       error: function (){        
+		                         
+		       }
+		     });
+
+}
+
+
+	$(document).ready(function(){
+		$("#p_name").prop('readonly', true);
+		$("#nameChange").click(function(){
+			 $("#p_name").prop('readonly', false);
+			 $("#submitChk").prop('disabled', true);
+			 alert("이름변경")
+		}) 
+
+		$("#submitChk").click(function(){
+			if(/[/,\\]/.test( $("#p_name").val() )){
+				alert("상품명 에러")
+				return
+			}
+			if(!/^[ㄱ-ㅎ가-힣0-9a-zA-Z_!@#$%^&*.\s]{1,33}$/.test( $("#p_name").val() ) ){
+				alert("상품명 에러")
+				return
+			}
+
+			if($("#p_imageFF").val() != "" && $("#p_imageFF").val() != null){
+				var img = document.getElementById('p_imageFF').value; 
+				img = img.slice(img.indexOf(".") + 1).toLowerCase();
+				if(img != "jpg" && img != "png" &&  img != "gif" &&  img != "bmp" &&  img != "jpeg"){
+					alert("이미지파일 에러 \n확장자명은 jpg, jpeg, png, gif, bmp만 가능합니다.");
+					return;
+				}
+			}
+			if($("#p_imageFF_d").val() != "" && $("#p_imageFF_d").val() != null){
+				var img = document.getElementById('p_imageFF_d').value; 
+				img = img.slice(img.indexOf(".") + 1).toLowerCase();
+				if(img != "jpg" && img != "png" &&  img != "gif" &&  img != "bmp" &&  img != "jpeg"){
+					alert("상세 이미지파일 에러 \n확장자명은 jpg, jpeg, png, gif, bmp만 가능합니다.");
+					return;
+				}
+			}
+			if($("#p_imageFF_d").val() != "" && $("#p_imageFF_d").val() != null){
+				var img = document.getElementById('p_imageFF_d').value; 
+				img = img.slice(img.indexOf(".") + 1).toLowerCase();
+				if(img != "jpg" && img != "png" &&  img != "gif" &&  img != "bmp" &&  img != "jpeg"){
+					alert("메인 페이지용 이미지파일 에러 \n확장자명은 jpg, jpeg, png, gif, bmp만 가능합니다.");
+					return;
+				}
+			}
+			if( !/^[가-힣/]{1,20}$/.test( $("#p_cate").val() )){
+				alert("카테고리 에러")
+				return
+			}
+			if( !/^[가-힣/]{1,20}$/.test( $("#p_cate_d").val() )){
+				alert("상세카테고리 에러")
+				return
+			}
+			
+			
+			if( !/^[0-9]{1,7}$/.test( $("#p_price").val() )){
+				alert("가격입력 에러")
+				return
+			}
+
+			if($("#p_content").val() != "" && $("#p_content").val() != null){
+				if( !/[ㄱ-ㅎ가-힣0-9a-zA-Z_!@#$%^&*\s]{1,90}$/.test( $("#p_content").val() )){
+					alert("상품정보 입력 에러 \n 사용가능특수문자(!@#$%^&*)\n 최대 90자까지 입력가능합니다.")
+					return
+				}
+			}
+			alert("작성완료")
+			frm.submit()
+		})
+	})
+</script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>storage/detail 페이지</title>
+</head>
+<body>
+<c:set var="vo" value="${data }"></c:set>
+<form action="/admin/storage/modifyReg?p_code=${vo.p_code }" method="post" enctype="multipart/form-data" name="frm">
+<input type="hidden" name="p_code" value="${vo.p_code }">
+<input type="hidden" name="fileNum" id="fileNum">
+	<table border="" width="100%">
+		<tr>
+			<td>상품명</td>
+			<td><input type="text" name="p_name" value="${vo.p_name }" id="p_name" />
+				<button class="nameChk" type="button" id="nameChk" onclick="fn_nameChk();">중복확인</button>
+				<input type="button" value="상품명변경" id="nameChange"  />
+			
+			</td>
+		</tr>
+		<tr>
+			<td>상품 사진</td>
+			<td>
+				<c:choose>
+					<c:when test="${vo.p_image==null }">
+						<input type="file" name="p_imageFF" id="p_imageFF"/>
+					</c:when>
+					<c:otherwise>
+						<input type="hidden" name="p_image" value="${vo.p_image }" >
+						${vo.p_image }<input type="button" value="파일삭제" onclick="fileDelete(0)"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td>상품 내용 사진</td>
+			<td>
+				<c:choose>
+					<c:when test="${vo.p_image_d==null }">
+						<input type="file" name="p_imageFF_d" id="p_imageFF_d"/>
+					</c:when>
+					<c:otherwise>
+						<input type="hidden" name="p_image_d" value="${vo.p_image_d }">
+						${vo.p_image_d }<input type="button" value="파일삭제" onclick="fileDelete(1)"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td>상품 메인페이지용 사진</td>
+			<td>
+				<c:choose>
+					<c:when test="${vo.p_image_m==null }">
+						<input type="file" name="p_imageFF_m" id="p_imageFF_m" />
+					</c:when>
+					<c:otherwise>
+						<input type="hidden" name="p_image_m" value="${vo.p_image_m }">
+						${vo.p_image_m }<input type="button" value="파일삭제" onclick="fileDelete(2)"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<td>카테고리</td>
+			<td><input type="text" name="p_cate" value="${vo.p_cate }" id="p_cate" /></td>
+		</tr>
+		<tr>
+			<td>세부카테고리</td>
+			<td><input type="text" name="p_cate_d" value="${vo.p_cate_d }" id="p_cate_d" /></td>
+		</tr>
+		<tr>
+			<td>상품가격</td>
+			<td><input type="text" name="p_price" value="${vo.p_price }" id="p_price" /></td>
+		</tr>
+		<tr>
+			<td>상품정보</td>
+			<td><textarea name="p_content" cols="50" rows="5" id="p_content">${vo.p_content } </textarea></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right">
+				<input type="button" value="수정" id="submitChk"/>
+				<input type="reset" value="초기화" />
+				<a href="/admin/storage/detail?p_code=${vo.p_code }">뒤로</a>
+			</td>
+		</tr>
+	</table>
+</form>
+</body>
+</html>

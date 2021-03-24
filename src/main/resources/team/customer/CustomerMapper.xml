@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.customer.CustomerMapper">
+
+	<select id="list" resultType="CustomerVO" parameterType="java.lang.Integer">
+		<![CDATA[
+		select * from (select rownum rnum, t1.* from 
+		(SELECT * FROM CUSTOMER order BY GRADE DESC,no) t1) 
+		where rnum >= #{start} and rnum <= #{end}
+		]]>
+	</select>
+	
+	<select id="listmy" resultType="CustomerVO">
+		select * from Customer where id = #{id}
+	</select>
+	
+	
+	<select id="listSch" resultType="CustomerVO" parameterType="CustomerVO">
+		
+		select * from customer where name like '%'||#{name}||'%'
+	</select>
+
+	<select id="listBe" resultType="CustomerVO" parameterType="CustomerVO">
+		
+		select * from customer where grade = #{grade} 
+	</select>
+	
+	<select id="totalCnt" resultType="java.lang.Integer">
+		select count(*) from customer
+	</select>
+	
+		<select id="detail" resultType="CustomerVO" parameterType="java.lang.Integer">
+		select * from Customer where no = #{no}
+	</select>
+
+		<select id="detail_id" resultType="CustomerVO" >
+		select * from Customer where id = #{id}
+	</select>
+
+		<sql id="noMax">
+		(select max(no)+1 from Customer)
+	</sql>
+	
+	<insert id="insert" parameterType="CustomerVO">
+		<selectKey keyProperty="no" resultType="java.lang.Integer" order="BEFORE">
+			<include refid="noMax"/>
+		</selectKey>
+		insert into Customer 
+		(no, id, pw, name, mail, tel, zipcode, address, dog_size, dog_age ,grade) 
+		values
+		(#{no}, #{id},#{pw},#{name}, #{mail}, #{tel}, #{zipcode}, #{address}, #{dog_size}, #{dog_age}, #{grade})
+	</insert>
+
+	
+	<update id="modify" parameterType="CustomerVO">
+		update Customer set 
+		id = #{id}, pw = #{pw}, 
+		name = #{name}, mail = #{mail}, tel = #{tel},
+		zipcode = #{zipcode}, address = #{address} ,
+		dog_size = #{dog_size} , dog_age = #{dog_age},
+		grade = #{grade} where no = #{no}
+	</update>
+	
+	<update id="modify2" parameterType="CustomerVO">
+		update customer set 
+		no = #{no},  pw = #{pw}, name = #{name}, mail = #{mail}, 
+		tel = #{tel}, zipcode = #{zipcode}, address = #{address}, 
+		dog_size = #{dog_size}, dog_age = #{dog_age}
+		where no = #{no}
+	</update>
+		
+		
+		<delete id = "delete" parameterType="CustomerVO">
+		<!-- delete from Customer where no = #{no} -->
+		UPDATE customer SET grade = '비활성' WHERE no=#{no}  
+	</delete>
+		
+		
+
+	
+</mapper>
+
+

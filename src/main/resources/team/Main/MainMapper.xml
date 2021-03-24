@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.Main.MainMapper">
+	<select id="mainList" resultType="storageVO">
+		<![CDATA[
+		select * from (select rownum rnum, t1.* from 
+		(select * from product WHERE P_IMAGE_M IS NOT NULL order by p_code) t1) 
+		where rnum >= 1 and rnum <= 9
+		]]>
+	</select>
+	
+	
+</mapper>
+
+

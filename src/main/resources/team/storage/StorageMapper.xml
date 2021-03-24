@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"https://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="team.storage.StorageMapper">
+	<select id="iList" resultType="storageVO">
+		select * from product 
+	</select>
+	
+	<select id="insertChk" resultType="storageVO">
+		select * from product where p_name = #{name}
+	</select>
+	
+	<select id="list" resultType="storageVO" parameterType="java.lang.Integer">
+		<![CDATA[
+		select * from (select rownum rnum, t1.* from 
+		(select * from product order by p_code) t1) 
+		where rnum >= #{start} and rnum <= #{end}
+		]]>
+	</select>
+	
+	<select id="totalCnt" resultType="java.lang.Integer">
+		select count(*) from product
+	</select>
+	
+	<select id="totalIOCnt" resultType="java.lang.Integer">
+		select count(*) from productio
+	</select>
+	
+	<select id="ioList" resultType="storageIOVO" parameterType="java.lang.Integer">
+		<![CDATA[
+			select * from (select rownum rnum, t1.* from 
+			(select * from productio order by io_regdate desc) t1) 
+			where rnum >= #{start} and rnum <= #{end}
+		]]>
+	</select>
+	
+	<select id="listSch" resultType="storageVO" parameterType="storageVO">
+		
+		select * from product where p_name like '%'||#{p_name}||'%'
+	</select>
+	
+	<select id="ioListSch" resultType="storageIOVO" parameterType="storageIOVO">
+		
+		select * from productio where io_name like '%'||#{io_name}||'%'
+	</select>
+	
+	<select id="detail" resultType="storageVO" parameterType="java.lang.Integer">
+		select * from product where p_code = #{p_code}
+	</select>
+	
+	<select id="imgList" resultType="storageVO" parameterType="java.lang.Integer">
+		select * from product where p_code = #{p_code}
+	</select>
+	
+	
+	<sql id="p_codeMax">
+		(select max(p_code)+1 from product)
+	</sql>
+	
+	<insert id="insert" parameterType="storageVO">
+		<selectKey keyProperty="p_code" resultType="java.lang.Integer" order="BEFORE">
+			<include refid="p_codeMax"/>
+		</selectKey>
+		insert into product 
+		(p_code, p_name, p_image, p_image_d, p_image_m, p_cate, p_cate_d, p_price, p_amount, p_content, p_regdate, p_mdate) 
+		values
+		(#{p_code}, #{p_name}, #{p_image}, #{p_image_d}, #{p_image_m}, #{p_cate}, #{p_cate_d}, #{p_price}, #{p_amount}, #{p_content}, sysdate, sysdate)
+	</insert>
+	
+	<insert id="ioInsert" parameterType="storageIOVO">
+		insert into productio 
+		(io_code, io_name, io_amount, io_before_amount, io_content, io_regdate) 
+		values
+		(#{io_code}, #{io_name}, #{io_amount}, #{io_before_amount}, #{io_content}, sysdate)
+	</insert>
+	
+	
+	<update id="modify" parameterType="storageVO">
+		update product set p_name = #{p_name}, p_image = #{p_image}, p_image_d = #{p_image_d}, p_image_m = #{p_image_m},
+		p_cate = #{p_cate}, p_cate_d = #{p_cate_d}, p_price = #{p_price},
+		p_content = #{p_content}, p_mdate = sysdate where p_code = #{p_code}
+	</update>
+	
+	<update id="ioModify" parameterType="storageVO">
+		update product set p_amount = #{p_amount} where p_code = #{p_code}
+	</update>
+	
+	<update id="fileModify0" parameterType="storageVO">
+		update product set p_image = null where p_code = #{p_code}
+	</update>
+	<update id="fileModify1" parameterType="storageVO">
+		update product set p_image_d = null where p_code = #{p_code}
+	</update>
+	<update id="fileModify2" parameterType="storageVO">
+		update product set p_image_m = null where p_code = #{p_code}
+	</update>
+	
+	<delete id = "delete" parameterType="storageVO">
+		delete from product where p_code = #{p_code}
+	</delete>
+	
+	
+</mapper>
+
+
